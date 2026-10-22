@@ -1,19 +1,52 @@
 #!/usr/bin/env bash
 # hnl gate — `typecheck` + `lint` + `test` over this package's `.hnl` sources.
 #
-# Sources live in `src/` (one package per repo, ADR-0128 split). Nothing else
-# covers them — `cargo` never sees `.hnl`.
+# Committed sources live in `src/` (one package per repo, ADR-0128 split);
+# the generated port/adapter pair is emitted under
+# `handl-packages/generated/` from the committed spec + config in `specs/`
+# — a gitignored build artifact this script regenerates first, so a fresh
+# checkout gates clean. Nothing else covers `.hnl` — `cargo` never sees them.
 #
 # Usage:  HNL=../host-cli/target/debug/hnl scripts/hnl-gate.sh
 set -euo pipefail
 
 SRC_DIR="${SRC_DIR:-src}"
+GEN_DIR="${GEN_DIR:-handl-packages/generated}"
+SPEC_DIR="${SPEC_DIR:-specs}"
 HNL="${HNL:-../host-cli/target/debug/hnl}"
 if [ ! -x "$HNL" ]; then
   echo "error: no hnl binary at '$HNL'" >&2
   echo "       build it:   (cd ../host-cli && cargo build --bin hnl)" >&2
   exit 1
 fi
+
+# Resolve a system header to a real path — /usr/include on Arch/Fedora,
+# /usr/include/<triplet> on Debian/Ubuntu multiarch. Returns 1 when the
+# dev headers are not installed.
+resolve_header() {
+  for d in /usr/include "/usr/include/$(uname -m)-linux-gnu" /usr/local/include; do
+    [ -f "$d/$1" ] && { printf '%s\n' "$d/$1"; return 0; }
+  done
+  return 1
+}
+
+# Regenerate the port/adapter pair from the committed spec first — always
+# re-emit so the gate covers the current spec, not a stale artifact. The
+# `c` backend needs libclang (set LIBCLANG_PATH when the loader cannot
+# find it); the spec's `#include <curl/curl.h>` needs the libcurl dev
+# headers — warn + skip regen when they are not installed rather than
+# failing the whole gate.
+if [ -f "$SPEC_DIR/curl.h" ]; then
+  echo "== hnl sdkgen c $SPEC_DIR/curl.h --output $GEN_DIR/curl =="
+  if resolve_header curl/curl.h >/dev/null; then
+    "$HNL" sdkgen c "$SPEC_DIR/curl.h" --output "$GEN_DIR/curl" --config "$SPEC_DIR/curl.sdkgen.yaml"
+  else
+    echo "   warning: curl/curl.h not found — skipping curl regen (install libcurl headers)" >&2
+  fi
+fi
+
+scan_dirs=("$SRC_DIR")
+[ -d "$GEN_DIR" ] && scan_dirs+=("$GEN_DIR")
 
 # The corpus is mixed-dialect: canonical `.hnl` and arrow/contract `.hnl`
 # (`~>`, `cap`/`op`/`handl`/`tag` declarations, a leading `axiom`). The
@@ -60,10 +93,10 @@ while IFS= read -r f; do
   else
     skipped=$((skipped + 1))
   fi
-done < <(find "$SRC_DIR" -name '*.hnl' | sort)
+done < <(find "${scan_dirs[@]}" -name '*.hnl' | sort)
 
 if [ "${#sources[@]}" -eq 0 ] && [ "${#tests[@]}" -eq 0 ]; then
-  echo "only non-canonical (arrow/contract) sources under $SRC_DIR/ — gate skipped"
+  echo "only non-canonical (arrow/contract) sources under ${scan_dirs[*]}/ — gate skipped"
   exit 0
 fi
 

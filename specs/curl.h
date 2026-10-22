@@ -7,9 +7,9 @@
  * main-file decls. Identical signatures, legal C.
  *
  * Regenerate:
- *   hnl sdkgen c handl-packages/generated/curl-spec/curl.h \
+ *   hnl sdkgen c specs/curl.h \
  *     --output handl-packages/generated/curl \
- *     --config handl-packages/generated/curl.sdkgen.yaml
+ *     --config specs/curl.sdkgen.yaml
  *
  * The variadic functions (curl_easy_setopt, curl_easy_getinfo) are not
  * bound here — fetch-c.hnl calls them through `ffi.call` directly, like

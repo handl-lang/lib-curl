@@ -70,14 +70,18 @@ symbols:
   # CURLcode curl_easy_perform(CURL*)
   curl_easy_perform:
     args: ["ptr"]
+    names: ["curl"]
     descriptor: "i32"
   # void curl_easy_cleanup(CURL*)
   curl_easy_cleanup:
     args: ["ptr"]
+    names: ["curl"]
     descriptor: "void"
   # const char *curl_easy_strerror(CURLcode)
   curl_easy_strerror:
     args: ["i32"]
+    names: ["errornum"]
+    ret: String
     descriptor: "cstr"
   # struct curl_slist *curl_slist_append(struct curl_slist *, const char *)
   curl_slist_append:
@@ -96,9 +100,11 @@ symbols:
   # CURLMcode curl_multi_add_handle / remove_handle(CURLM*, CURL*)
   curl_multi_add_handle:
     args: ["ptr", "ptr"]
+    names: ["multi", "easy"]
     descriptor: "i32"
   curl_multi_remove_handle:
     args: ["ptr", "ptr"]
+    names: ["multi", "easy"]
     descriptor: "i32"
   # CURLMcode curl_multi_perform(CURLM*, int *running)
   curl_multi_perform:
@@ -120,10 +126,13 @@ symbols:
   # CURLMcode curl_multi_cleanup(CURLM*)
   curl_multi_cleanup:
     args: ["ptr"]
+    names: ["multi"]
     descriptor: "i32"
   # const char *curl_multi_strerror(CURLMcode)
   curl_multi_strerror:
     args: ["i32"]
+    names: ["code"]
+    ret: String
     descriptor: "cstr"
 
   # WebSocket API — client only (libcurl has no WS server). The frame
