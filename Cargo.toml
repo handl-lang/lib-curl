@@ -2,9 +2,11 @@
 name = "handl-lib-curl"
 version = "0.1.0"
 edition = "2024"
-description = "curl: sdkgen-generated libcurl FFI bindings (port + linux-x86_64 adapters) — ADR-0128 split."
-license = "MIT OR Apache-2.0"
+description = "sdkgen-generated libcurl FFI bindings — generic ports plus linux-x86_64 adapters."
+license = "MIT"
 repository = "https://github.com/handl-lang/lib-curl"
+readme = "README.md"
+homepage = "https://github.com/handl-lang/lib-curl"
 
 # Const-only: pure handl.
 [dependencies]

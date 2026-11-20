@@ -1,3 +1,10 @@
 -- lib-curl: modules this package provides (entry defaults to
 -- src/index.hnl; N modules resolve to src/<name>/index.hnl).
-{ modules: ["curl"] }
+{
+  modules: ["curl"],
+  name: "curl",
+  description: "sdkgen-generated libcurl FFI bindings — generic ports plus linux-x86_64 adapters.",
+  license: "MIT",
+  keywords: ["curl", "ffi", "sdkgen", "bindings"],
+  homepage: "https://github.com/handl-lang/lib-curl",
+}

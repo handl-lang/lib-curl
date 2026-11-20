@@ -5,9 +5,6 @@ sdkgen-generated libcurl FFI bindings — generic ports plus the
 gitignored build artifact). The spec (`specs/curl.h`) re-declares the easy +
 multi entry points because `hnl sdkgen c` only collects main-file decls.
 
-Part of the `handl-lang` org split (ADR-0128). History is a `git subtree
-split` of the platform monorepo's `generated/curl/` (via `c`).
-
 ## Layout
 
 ```text
