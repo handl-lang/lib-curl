@@ -6,7 +6,7 @@
 
 [[repos]]
 name = "handl-lang/lib-curl"
-dir = "/home/luis/GitHub/handl-lang/lib-curl"
+dir = "~//GitHub/handl-lang/lib-curl"
 branch = "refs/heads/main"
   [repos.runner]
   kind = "script"
