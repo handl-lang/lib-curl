@@ -1,9 +1,9 @@
-# SDK generation config for libcurl — the C backend for `fetch-c`.
+# Codegen config for libcurl — the C backend for `fetch-c`.
 #
 # Only the non-variadic easy-API surface is generated here. The variadic
 # calls (`curl_easy_setopt`, `curl_easy_getinfo`) are bound by hand in
 # fetch-c.hnl via direct `ffi.call` — the variadic tail is per-call-site,
-# exactly like `syscall`/`fcntl` in libc.sdkgen.yaml.
+# exactly like `syscall`/`fcntl` in lib-libc's codegen config.
 library: libcurl.so.4
 
 headers:

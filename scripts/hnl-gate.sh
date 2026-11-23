@@ -37,9 +37,9 @@ resolve_header() {
 # headers — warn + skip regen when they are not installed rather than
 # failing the whole gate.
 if [ -f "$SPEC_DIR/curl.h" ]; then
-  echo "== hnl sdkgen c $SPEC_DIR/curl.h --output $GEN_DIR/curl =="
+  echo "== hnl codegen c $SPEC_DIR/curl.h --output $GEN_DIR/curl =="
   if resolve_header curl/curl.h >/dev/null; then
-    "$HNL" sdkgen c "$SPEC_DIR/curl.h" --output "$GEN_DIR/curl" --config "$SPEC_DIR/curl.sdkgen.yaml"
+    "$HNL" codegen c "$SPEC_DIR/curl.h" --output "$GEN_DIR/curl" --config "$SPEC_DIR/curl.codegen.yaml"
   else
     echo "   warning: curl/curl.h not found — skipping curl regen (install libcurl headers)" >&2
   fi

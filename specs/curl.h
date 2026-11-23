@@ -1,15 +1,15 @@
-/* sdkgen spec for libcurl — NOT a vendored header.
+/* codegen spec for libcurl — NOT a vendored header.
  *
- * `hnl sdkgen c` only collects functions declared in the main file, but
+ * `hnl codegen c` only collects functions declared in the main file, but
  * the easy API lives in <curl/easy.h> (reached via curl.h's include
  * closure). This spec includes the real <curl/curl.h> for types and
  * constants, then re-declares the functions we bind so they are
  * main-file decls. Identical signatures, legal C.
  *
  * Regenerate:
- *   hnl sdkgen c specs/curl.h \
+ *   hnl codegen c specs/curl.h \
  *     --output handl-packages/generated/curl \
- *     --config specs/curl.sdkgen.yaml
+ *     --config specs/curl.codegen.yaml
  *
  * The variadic functions (curl_easy_setopt, curl_easy_getinfo) are not
  * bound here — fetch-c.hnl calls them through `ffi.call` directly, like
