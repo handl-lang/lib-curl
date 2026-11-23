@@ -36,7 +36,13 @@ resolve_header() {
 # find it); the spec's `#include <curl/curl.h>` needs the libcurl dev
 # headers — warn + skip regen when they are not installed rather than
 # failing the whole gate.
-if [ -f "$SPEC_DIR/curl.h" ]; then
+# HNL_GATE_SKIP_REGEN=1 skips the regen leg — used by `hnl run gate`
+# (pkg.hnl), whose dependsOn regen task has already produced fresh
+# handl-packages/generated/ output (cache hit restores it, miss re-ran
+# the same `hnl codegen c` command).
+if [ "${HNL_GATE_SKIP_REGEN:-0}" = "1" ]; then
+  echo "== hnl codegen skipped (HNL_GATE_SKIP_REGEN=1) =="
+elif [ -f "$SPEC_DIR/curl.h" ]; then
   echo "== hnl codegen c $SPEC_DIR/curl.h --output $GEN_DIR/curl =="
   if resolve_header curl/curl.h >/dev/null; then
     "$HNL" codegen c "$SPEC_DIR/curl.h" --output "$GEN_DIR/curl" --config "$SPEC_DIR/curl.codegen.yaml"

@@ -8,4 +8,27 @@
   license: "MIT",
   keywords: ["curl", "ffi", "codegen", "bindings"],
   homepage: "https://github.com/handl-lang/lib-curl",
+  -- `hnl run` task scripts (P-003). `regen` is the codegen leg of
+  -- scripts/hnl-gate.sh as a cacheable task: inputs are the committed
+  -- specs, outputs the gitignored generated/ tree. `gate` wraps the
+  -- repo's own gate script; dependsOn regen so a regen cache hit
+  -- restores fresh codegen output before gate's inputs are
+  -- fingerprinted, and HNL_GATE_SKIP_REGEN=1 (via `env`, argv not
+  -- shell) keeps hnl-gate.sh from re-emitting what regen produced.
+  -- env: fingerprints the knobs the gate actually reads.
+  scripts: {
+    regen: {
+      run: "hnl codegen c specs/curl.h --output handl-packages/generated/curl --config specs/curl.codegen.yaml",
+      cache: true,
+      inputs: ["specs/curl.h", "specs/curl.codegen.yaml", "pkg.hnl"],
+      outputs: ["handl-packages/generated/**"],
+    },
+    gate: {
+      run: "env HNL_GATE_SKIP_REGEN=1 bash scripts/hnl-gate.sh",
+      dependsOn: ["regen"],
+      cache: true,
+      inputs: ["src/**", "specs/**", "scripts/hnl-gate.sh", "pkg.hnl", "handl-packages/generated/**"],
+      env: ["HNL", "HANDL_EXT_DIR"],
+    },
+  },
 }
